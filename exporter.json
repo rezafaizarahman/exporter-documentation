@@ -1,9 +1,9 @@
 {
-  "id": "io.supernova.documentation-main",
-  "name": "Default Documentation",
+  "id": "io.futurehome.yggdrasil",
+  "name": "Yggdrasil Documentation",
   "description": "Default customizable exporter for design system documentation",
-  "author": "Supernova",
-  "organization": "Supernova",
+  "author": "Yggdrasil Team",
+  "organization": "Futurehome",
   "source_dir": "src",
   "assets_dir": "assets",
   "version": "4.11.7",
