@@ -26,8 +26,8 @@
   --logoWrapperWidth: var(--sideNavWidth);
 
   /* main header item background when active */
-  --buttonSearchBackground: rgba(255, 255, 255, 0.1);
-  --buttonSearchBackgroundHover: rgba(255, 255, 255, 0.2);
+  --buttonSearchBackground: var(--colorColorBackgroundWeak);
+  --buttonSearchBackgroundHover: var(--colorColorBackgroundWeaker);
   --buttonSearchInk: var(--colorInkSecondary);
   --buttonSearchInkHover: var(--colorInkInverted);
 }

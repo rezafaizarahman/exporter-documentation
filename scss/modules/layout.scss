@@ -22,7 +22,7 @@
   --sideNavGap: 0px;
 
   /* Side Navigation Item */
-  --sideNavItemHoverBackground: rgba(0,0,0,0.04);
+  --sideNavItemHoverBackground: var(--colorColorBackgroundWeaker);
   --sideNavItemHoverInk: var(--sideNavInk);
   --sideNavItemActiveBackground: var(--colorAccentSurface);
   --sideNavItemActiveInk: var(--colorAccent);
