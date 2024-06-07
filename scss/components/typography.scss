@@ -11,7 +11,7 @@
 
     --fontWeightNormal: 400;
     --fontWeightSemibold: 500;
-    --fontWeightBold: 640;
+    --fontWeightBold: 600;
 
     /* Supporting sizes */
     --fontSizeSmall: 0.875rem;
@@ -31,7 +31,7 @@
     --headingLevel5Size: 1rem;
 
     /* Page Title + Description */
-    --pageTitleFontFamily: var(--fontFamily);
+    --pageTitleFontFamily: var(--headingFontFamily);
     --pageTitleFontSize: 32px;
     --pageTitleFontWeight: var(--fontWeightBold);
     --pageDescriptionFontSize: 18px;

@@ -1,9 +1,9 @@
 {
-  "id": "io.supernova.documentation-main",
-  "name": "Default Documentation",
+  "id": "io.futurehome.yggdrasil",
+  "name": "Yggdrasil Documentation",
   "description": "Default customizable exporter for design system documentation",
-  "author": "Supernova",
-  "organization": "Supernova",
+  "author": "Yggdrasil Team",
+  "organization": "Futurehome",
   "source_dir": "src",
   "assets_dir": "assets",
   "version": "4.11.7",
@@ -79,7 +79,7 @@
         "description": "Font used in published documentation. If you use a custom font family (e.g. from Google Fonts), you might need to embed it below.",
         "label": "Font family",
         "category": "Look & feel",
-        "default": "Inter, Arial, sans-serif"
+        "default": "Work Sans, Arial, sans-serif"
       },
       {
         "key": "advancedCustomizationCustomFonts",
@@ -87,7 +87,7 @@
         "label": "Custom font embed",
         "description": "Fonts that will be added to your site <head> (e.g. for typography token previews). You can load multiple fonts if needed.",
         "category": "Look & feel",
-        "default": "<link href=\"https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap\" rel=\"stylesheet\">",
+        "default": "<link href=\"https://fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap\" rel=\"stylesheet\">",
         "isMultiline": true,
         "inputType": "code"
       },
