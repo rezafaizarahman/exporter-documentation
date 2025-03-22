@@ -44,9 +44,11 @@
     {[ elseif headerConfiguration.backgroundColor.aliasTo ]}
         {* Background color provided as token *}
         {[ let colorToken = ds.tokenById(headerConfiguration.backgroundColor.aliasTo) /]}
+        {[ let backgroundColor = "" /]}
         {[ if colorToken ]}
-        <div class="container-title{{ centeredClass }}{{ flexedClass }}{{layoutTypeClass}}" style="{{ heightStyle }}background-color: #{{ colorToken.value.hex }};">
+             {[ backgroundColor = ("background-color: " + tokenValueToHex(colorToken.value) + ";") /]}
         {[/]}
+        <div class="container-title{{ centeredClass }}{{ flexedClass }}{{layoutTypeClass}}" style="{{ heightStyle }}{{ backgroundColor }}">
     {[ else ]}
         <div class="container-title{{ centeredClass }}{{ flexedClass }}{{layoutTypeClass}}" style="{{ heightStyle }}">
     {[/]}
@@ -54,7 +56,7 @@
 {[ else ]}
 <div class="container-title{{ centeredClass }}{{ flexedClass }}{{layoutTypeClass}}" style="{{ heightStyle }}">
 {[/]}
-    {[ if headerConfiguration.showBackgroundOverlay ]}
+    {[ if (headerConfiguration.showBackgroundOverlay && headerConfiguration.backgroundImageAssetUrl) ]}
         <div class="container-title-overlay"></div>
     {[/]}
     <div class="slider">
@@ -69,7 +71,7 @@
                 {* Foreground color provided as token *}
                 {[ let colorToken = ds.tokenById(headerConfiguration.foregroundColor.aliasTo) /]}
                 {[ if colorToken ]}
-                    {[ color = colorToken.value.hex.prefixed("#") /]}
+                    {[ color = tokenValueToHex(colorToken.value) /]}
                 {[/]}
             {[/]}
             {[ let style = (color.count() > 0 ? "color: " + color : "") /]}

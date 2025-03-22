@@ -1,16 +1,48 @@
 /*------------------------
    Content menu tracking
 -------------------------- */
+/**
+ * Navigates to a specific element on the page, handling elements within tabs
+ * @param {(string|HTMLElement)} elementOrHash - Either a hash string (e.g. "#section1") or DOM element to navigate to
+ */
+function navigateToElement(elementOrHash) {
+    // Handle both element and hash string cases by converting hash to element if needed
+    const foundElement = typeof elementOrHash === 'string' 
+        ? document.querySelector(elementOrHash)
+        : elementOrHash;
 
-$(window).on('load', function() {
-    let sections = [];
-
-    // Store and restore menu scroll offset
-    const scroll = localStorage.getItem('menu.scroll.position.top');
-    if (scroll) {
-        $('.sidebar-navigation').scrollTop(scroll);
+    if (foundElement) {
+        // Check if element is inside a tab pane
+        const tabPane = foundElement.closest('.tab-pane');
+        if (tabPane) {
+            const tabPaneId = tabPane.id;
+            // Find the tabs container that contains this tab pane
+            const tabsContainer = tabPane.closest('.content-block--tabs');
+            if (tabsContainer) {
+                // Find the tab that controls this tab pane — for both classical tabs and accordions
+                const tab = tabsContainer.querySelector(`.nav-link[href="#${tabPaneId}"]`) || 
+                           tabsContainer.querySelector(`a[data-target="#${tabPaneId}"]`);
+                
+                if (tab) {
+                    // If tab pane is hidden, click the tab to show it
+                    if (!tabPane.classList.contains('show')) {
+                        tab.click();
+                    }
+                    
+                    // Wait for tab transition to complete before scrolling
+                    // tab transition takes 150ms, we wait a bit longer to be safe
+                    setTimeout(() => {
+                        foundElement.scrollIntoView({ block: 'start', inline: 'nearest' });
+                    }, 250);
+                }
+            }
+        }
     }
+}
 
+$(document).ready(function () {
+    // Setting the observer to set the scroll state of main navigation on the left
+    // It is used in full_page.pr, so there is no visible scrollbar jumping
     document.querySelectorAll('.sidebar-navigation').forEach(section => {
         section.addEventListener(
             'scroll',
@@ -21,19 +53,68 @@ $(window).on('load', function() {
         );
     });
 
-    // ENG-1151: Browser should by default scroll to the anchor when the page is loaded, but in some cases it doesn't
+    // add event listend for all clics to links, so we can scroll to the heading if it is part of a tab
+    document.querySelectorAll('a[href*="#section"]:not(.copy-anchor)').forEach(link => {
+        link.addEventListener('click', function() {
+            const href = this.getAttribute('href');
+            const hash = href.split('#')[1];
+            const foundElement = document.querySelector(`[id='${hash}']`);
+            navigateToElement(foundElement);
+        });
+    });
+
+
+    $('.nav-tabs-container').each(function() {
+        var $container = $(this);
+        var $tabsWrapper = $container.find('.nav-tabs-inline');
+        var $leftArrow = $container.find('.scroll-arrow-left');
+        var $rightArrow = $container.find('.scroll-arrow-right');
+
+        function checkForScroll() {
+            var scrollLeft = Math.floor($tabsWrapper.scrollLeft());
+            var scrollWidth = Math.floor($tabsWrapper[0].scrollWidth);
+            var clientWidth = Math.floor($tabsWrapper[0].clientWidth);
+
+          if (scrollLeft > 0) {
+            $leftArrow.css('display', 'flex');
+          } else {
+            $leftArrow.css('display', 'none');
+          }
+
+          if (scrollLeft < scrollWidth - clientWidth - 1) { // -1 because there is some issue with the scrollWidth
+            $rightArrow.css('display', 'flex');
+          } else {
+            $rightArrow.css('display', 'none');
+          }
+        }
+
+        function scrollTabs(direction) {
+          var scrollAmount = direction === 'left' ? -$tabsWrapper.width() : $tabsWrapper.width();
+          $tabsWrapper.animate({ scrollLeft: $tabsWrapper.scrollLeft() + scrollAmount }, 'smooth');
+        }
+
+        $tabsWrapper.on('scroll', checkForScroll);
+
+        $leftArrow.on('click', function() {
+          scrollTabs('left');
+        });
+
+        $rightArrow.on('click', function() {
+          scrollTabs('right');
+        });
+
+        checkForScroll(); // Initial check
+      });
+})
+
+// Handle initial page load with hash
+$(window).on('load', function() {
+    let sections = [];
+
     if (window.location.hash) {
         setTimeout(() => {
-            const foundElement = document.querySelector(window.location.hash);
-            if (foundElement && !isElementInViewport(foundElement) && window.getComputedStyle) {
-                let style = window.getComputedStyle(foundElement);
-                let height = ["height", "margin-top", "margin-bottom"]
-                    .map((key) => parseInt(style.getPropertyValue(key), 10))
-                    .reduce((prev, cur) => prev + cur);
-
-                $(document).scrollTop(foundElement.offsetTop - height);
-            }
-        }, 250)
+            navigateToElement(window.location.hash);
+        }, 250);
     }
 
     // Add preview banner in case the page is loaded in preview mode
@@ -455,6 +536,7 @@ async function copySVGTextToClipboard(svgURL) {
 
 $(function() {
     $('[data-toggle="tooltip"]').tooltip();
+    $('[data-toggle="popover"]').popover();
     $('[data-tooltip="tooltip"]').tooltip();
 });
 
@@ -465,17 +547,27 @@ function searchInList(target, list) {
     
     var value = $(target).val().toLowerCase().split(" ");
     // search for for multi-words search
-    $("#"+ list + " .grid > .tile-item").each(function () {
+    $(`#${list} .grid > .tile-item`).each(function () {
         matchWords($(this).attr("data-keywords").toLowerCase(), value) ? $(this).removeClass("hidden") : $(this).addClass("hidden")
     });
 
-    if ( $("#"+ list + " .grid > .tile-item:not(.hidden)").length === 0 )  {
-        $("#"+ list + " .grid").hide();
-        $("#"+ list + " .empty-state").show();
+    
+    if ( $(`#${list} .grid > .tile-item:not(.hidden)`).length === 0 )  {
+        $(`#${list} .grid`).hide();
+        $(`#${list} .empty-state`).show();
     } else {
-        $("#"+ list + " .grid").show();
-        $("#"+ list + " .empty-state").hide();
+        $(`#${list} .grid`).show();
+        $(`#${list} .empty-state`).hide();
     }
+
+    // Hide parent .grid if no visible tile items
+    $(`#${list} .grid`).each(function() {
+        if ($(this).find(".tile-item:not(.hidden)").length === 0) {
+            $(this).hide();
+        } else {
+            $(this).show();
+        }
+    });
 }
 
 function matchWords(subject, words) {

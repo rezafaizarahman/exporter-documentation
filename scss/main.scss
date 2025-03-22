@@ -81,7 +81,10 @@
 @import './blocks/table';
 @import './blocks/tabs';
 @import './blocks/tokens';
-@import './blocks/release-notes.scss';
+@import './blocks/release-notes';
+@import './blocks/guidelines';
+@import './blocks/figma-component-props-table';
+@import './blocks/figma-components';
 
 /* =================================== */
 
@@ -89,7 +92,7 @@
 /*  Code hightlight
 /* =================================== */
 
-@import './code/highlight.scss';
+@import './code/highlight';
 
 /* =================================== */
 

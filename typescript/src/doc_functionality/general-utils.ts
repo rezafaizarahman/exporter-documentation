@@ -1,6 +1,7 @@
 // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
 // MARK: - General utils
 var hash = require('short-hash');
+import semverSort from "semver-sort";
 
 export function getFullYear(): string {
     return new Date().getFullYear().toString();
@@ -9,6 +10,16 @@ export function getFullYear(): string {
 /* Check if javascript includes exact value */
 export function includes(arr: string[], value: string): boolean {
     return arr.includes(value);
+}
+
+/* Get object values */
+export function objectValues(obj: object): any[] {
+    return Object.values(obj);
+}
+
+/* Get object entries */
+export function objectEntries(obj: object): any[] {
+    return Object.entries(obj);
 }
 
 /* Get current formatted datetime */
@@ -52,4 +63,52 @@ export function generateCustomCSSHash(configuration: any): string {
         }, {});
 
     return hash(JSON.stringify(filteredConfiguration));
+}
+
+
+interface VersionObject {
+  id: string;
+  name: string;
+  description: string;
+  version: string;
+  changeLog: string | null;
+  isReadOnly: boolean;
+  isSharedDraft: boolean;
+}
+
+interface VersionWithKey {
+  original: VersionObject;
+  key: string | null;
+}
+
+export const sortVersionsBySemver = (versions: VersionObject[]): VersionObject[] => {
+  const versionsWithKeys: VersionWithKey[] = versions.map((version) => ({
+    original: version,
+    key: version.version.match(/\d+\.\d+\.\d+(-[a-zA-Z0-9_]+)?/)?.[0] || null,
+  }));
+
+  const validVersions = versionsWithKeys.filter((item) => item.key);
+
+  const sortedValidVersions = semverSort
+    .desc(validVersions.map((item) => item.key!))
+    .map(
+      (sortedKey) =>
+        validVersions.find((item) => item.key === sortedKey)!.original
+    );
+
+  const nonSemverEntries = versionsWithKeys
+    .filter((item) => !item.key)
+    .map((item) => item.original);
+
+  return sortedValidVersions.concat(nonSemverEntries);
+};
+
+// check if the array is non empty or non null, otherwise return []
+export const safeArray = (array: any[] | null | undefined): any[] => {
+  return array && array.length > 0 ? array : [];
+}
+
+// check if the variable is non empty or non null, otherwise return false
+export const isNonEmptyString = (value: string | null | undefined): boolean => {
+  return !!value;
 }
